@@ -1,0 +1,107 @@
+on:
+
+  push:
+
+    branches:
+
+      - main
+
+name: Deploy to Amazon ECS Cluster - app-central-apps-ecs-cluster-dev
+ 
+jobs:
+
+  deploy:
+
+    name: Deploy
+
+    runs-on: ubuntu-latest
+ 
+    steps:
+
+    - name: Checkout
+
+      uses: actions/checkout@v2
+ 
+#We are using dev/test IAM user "git action" Access and Secret Credentials
+
+    - name: Configure AWS credentials
+
+      uses: aws-actions/configure-aws-credentials@v1
+
+      with:
+
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
+
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+
+        aws-region: ap-south-1
+ 
+    - name: Login to Amazon ECR
+
+      id: login-ecr
+
+      uses: aws-actions/amazon-ecr-login@v1
+ 
+    - name: Build, tag, and push presea-cadet into Amazon ECR
+
+      id: build-image
+
+      env:
+
+        ECR_REGISTRY: 752749715166.dkr.ecr.ap-south-1.amazonaws.com
+
+        ECR_REPOSITORY: ecr-flask
+
+        IMAGE_TAG: ${{ github.sha }}
+
+        REGION: ap-south-1  
+
+        ECS_CLUSTER: demo-cluster
+
+        SERVICE_NAME: flask
+
+      run: |
+
+        # Build a docker container and
+
+        # push it to ECR so that it can
+
+        # be deployed to ECS.
+
+        # cd ./Synergy.PreseaCadet.Api/
+
+        echo "$(pwd)"
+
+        docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  ../.
+
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+ 
+    - name: Fill in the new image ID in the Amazon ECS task definition
+
+      id: task-def
+
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+
+      with:
+
+        task-definition: dev.json
+
+        container-name: flask
+
+        image: ${{ steps.build-image.outputs.image }}
+ 
+    - name: Deploy Amazon ECS task definition
+
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+
+      with:
+
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+
+        service: flask
+
+        cluster: demo-cluster
+
+  
