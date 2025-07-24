@@ -1,9 +1,9 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:ap-south-1:752749715166:task-definition/flask-dev:1",
+  "taskDefinitionArn": "arn:aws:ecs:ap-south-1:752749715166:task-definition/sample-dev:1",
   "containerDefinitions": [
     {
-      "name": "flask",
-      "image": "752749715166.dkr.ecr.ap-south-1.amazonaws.com/ecr-flask:nginx",
+      "name": "sample",
+      "image": "nginx",
       "cpu": 0,
       "portMappings": [
         {
