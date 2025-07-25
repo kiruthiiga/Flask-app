@@ -1,96 +1,99 @@
 # Flask-app
 
-Deploying Flask App using Amazon ECS (Fargate) – DebOps
-This document explains the step-by-step process to deploy a containerized application (e.g., Flask) using Amazon ECS with Fargate launch type in a serverless setup.
-
-Prerequisites
-AWS account with appropriate permissions
-
-1. Docker image pushed to ECR
-
-2. Existing Application Load Balancer (ALB)
-
-3. IAM roles created for ECS tasks and execution
-
-4. Deployment Steps:
-
+Deploying Flask App to Amazon ECS (Fargate)
+In this document, I'm outlining the steps I followed to deploy a Flask application using Amazon ECS with Fargate, along with a CI/CD pipeline using GitHub Actions. This approach helps us run the application on a serverless container platform without managing infrastructure manually.
+Tech Stack Used
+•	Amazon ECS (Fargate) – for serverless container orchestration
+•	Amazon ECR – for storing Docker images
+•	GitHub Actions – to automate build and deployment
+•	Docker – to containerize the Flask application
+•	Python Flask – the web application framework used
+ECS Deployment Steps
 Step 1: Create ECS Cluster
+•	Went to ECS service in AWS Console
+•	Chose the Networking only (Fargate) option
+•	Named the cluster (e.g., demo-cluster)
+Step 2: Service Preparation
+•	Before creating a service in the cluster, I ensured a Task Definition was ready.
+Step 3: Task Definition Creation
+•	Went to ECS > Task Definitions > Created a new one
+•	Selected FARGATE as the launch type
+•	Added container info (e.g., image: Flask app or nginx)
+•	Mapped ports (80 -> 80)
+•	Allocated CPU and memory (e.g., 256 CPU, 512MB RAM)
+•	Attached required IAM roles: Execution Role, Task Role, (Optional) Service Role
+Step 4: Task Registration
+•	Registered the task definition under the family name (e.g., flask-dev)
+•	Configured CloudWatch Logs using the awslogs driver
+Step 5: Create ECS Service
+•	Used the task definition created above
+•	Launch type: FARGATE
+•	Task count: 1
+•	Integrated with an Application Load Balancer (ALB)
+Step 6: Networking Configuration
+•	Selected the appropriate VPC and Subnets
+•	Enabled Auto-assign Public IP
+Step 7: Launch and Verification
+•	ECS automatically launched the container based on the task definition
+•	Verified the task and container status in the ECS console
+Step 8: Target Group Setup
+•	Went to EC2 > Target Groups under Load Balancing
+•	Created a new target group: Type: IP, Protocol: HTTP, Added the ECS task IP
+Step 9: ALB Rule Configuration
+•	Navigated to ALB Listener rules
+•	Added a new routing rule: Path: /flask, Action: Forward to the target group
+Step 10: ECS Service Update (If Required)
+•	Updated the ECS service when a new Docker image or task definition is available
+CI/CD Pipeline with GitHub Actions
+Configured GitHub Actions using a workflow file under .github/workflows/deploy.yml. This automates code checkout, AWS login, Docker image build & push to ECR, and ECS service deployment.
+Dockerfile
 
-Go to the ECS section in AWS.
-Create a new Cluster with default Fargate settings.
+FROM python:3.9-slim
 
-Step 2: Prepare to Create Service
+WORKDIR /app
 
-Inside the newly created Cluster, we need to create a Service.
-A Task Definition is required before creating a service.
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-Step 3: Create Task Definition
+COPY . .
 
-Create a new Fargate task definition.
+EXPOSE 80
+CMD ["python", "app.py"]
 
-Define container details:
-Image URL (from ECR)
-Memory & CPU
-Port mapping (e.g., 80:80)
-Attach IAM Roles:
-Execution Role (to pull images, write logs)
-Task Role (to access AWS resources like S3, etc.)
-Service Role (for ECS service permissions)
+Task Definition (Partial JSON)
 
-Step 4: Register Task Definition
+{
+  "family": "flask-dev",
+  "containerDefinitions": [
+    {
+      "name": "sample",
+      "image": "nginx",
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "flask-dev",
+          "awslogs-region": "ap-south-1",
+          "awslogs-stream-prefix": "flask-dev-log"
+        }
+      }
+    }
+  ],
+  "taskRoleArn": "...",
+  "executionRoleArn": "...",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512"
+}
 
-Once created, register the task definition.
-Make sure the version is correct and active.
-
-Step 5: Create Service
-
-Go back to the Cluster > Services tab.
-Click Create > Choose:
-Launch Type: Fargate
-Task Definition Family (select the one created above)
-Number of Tasks (e.g., 1)
-Load Balancing: Application Load Balancer
-
-Step 6: Configure Networking
-
-Select the appropriate VPC and Subnets.
-Enable Auto-assign Public IP if needed.
-
-Step 7: Service Created
-
-Once the service is launched, ECS will automatically:
-Start tasks based on the definition
-Spin up the containers
-
-Step 8: Verify Task and Container
-
-In the Tasks tab, check if the task is running.
-Inside each task, verify that the container is running.
-
-Step 9: Configure Target Group
-
-Go to EC2 > Load Balancers > Target Groups.
-If a target group doesn’t exist, create one:
-Target Type: IP
-Protocol: HTTP
-Port: 80
-Add IP addresses from the ECS tasks
-
-Step 10: ALB Rule Setup
-
-Go to Application Load Balancer > Listeners > View/Edit Rules.
-
-Add a Rule:
-Path pattern (e.g., /flaskapp)
-Forward to Target Group created above
-
-Step 11: Update ECS Service
-
-Go back to ECS Service.
-Click Update if any networking or task changes were made.
-
-Final Verification: 
-
-Access the application using your ALB DNS Name + Path.
-
-Example: http://my-alb-1234.us-east-1.elb.amazonaws.com/flaskapp
+Summary
+•	Deployed Flask app on ECS with Fargate (serverless)
+•	CI/CD pipeline set up using GitHub Actions
+•	Dockerized app stored in ECR
+•	Load balancing configured using ALB and target groups
