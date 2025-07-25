@@ -20,16 +20,16 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "flask-dev",
+          "awslogs-group": "/ecs/sample",
           "awslogs-region": "ap-south-1",
-          "awslogs-stream-prefix": "flask-dev-log"
+          "awslogs-stream-prefix": "ecs-sample"
         }
       }
     }
   ],
-  "family": "flask-dev",
-  "taskRoleArn": "arn:aws:iam::752749715166:role/flask-task-role-dev",
-  "executionRoleArn": "arn:aws:iam::752749715166:role/flask-execution-role-dev",
+  "family": "sample-dev",
+  "taskRoleArn": "arn:aws:iam::752749715166:role/sample-task-role-dev"",
+  "executionRoleArn": "arn:aws:iam::752749715166:role/sample-execution-role-dev",
   "networkMode": "awsvpc",
   "revision": 8,
   "volumes": [],
