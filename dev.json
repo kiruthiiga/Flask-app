@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "sample",
-      "image": "nginx",
+      "image": "752749715166.dkr.ecr.ap-south-1.amazonaws.com/ecr-flask:nginx",
       "cpu": 0,
       "portMappings": [
         {
@@ -28,7 +28,7 @@
     }
   ],
   "family": "sample-dev",
-  "taskRoleArn": "arn:aws:iam::752749715166:role/sample-task-role-dev"",
+  "taskRoleArn": "arn:aws:iam::752749715166:role/sample-task-role-dev",
   "executionRoleArn": "arn:aws:iam::752749715166:role/sample-execution-role-dev",
   "networkMode": "awsvpc",
   "revision": 8,
