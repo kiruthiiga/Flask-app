@@ -56,9 +56,9 @@ jobs:
 
         REGION: ap-south-1  
 
-        ECS_CLUSTER: demo-cluster
+        ECS_CLUSTER: sample-cluster
 
-        SERVICE_NAME: flask
+        SERVICE_NAME: sample-dev-service-hqfoqoi1
 
       run: |
 
@@ -88,7 +88,7 @@ jobs:
 
         task-definition: dev.json
 
-        container-name: flask
+        container-name: sample
 
         image: ${{ steps.build-image.outputs.image }}
  
@@ -100,8 +100,8 @@ jobs:
 
         task-definition: ${{ steps.task-def.outputs.task-definition }}
 
-        service: flask
+        service: sample-dev-service-hqfoqoi1
 
-        cluster: demo-cluster
+        cluster: sample-cluster
 
   
