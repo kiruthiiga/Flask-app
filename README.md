@@ -48,49 +48,6 @@ CI/CD Pipeline with GitHub Actions
 Configured GitHub Actions using a workflow file under .github/workflows/deploy.yml. This automates code checkout, AWS login, Docker image build & push to ECR, and ECS service deployment.
 Dockerfile
 
-FROM python:3.9-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-
-EXPOSE 80
-CMD ["python", "app.py"]
-
-Task Definition (Partial JSON)
-
-{
-  "family": "flask-dev",
-  "containerDefinitions": [
-    {
-      "name": "sample",
-      "image": "nginx",
-      "portMappings": [
-        {
-          "containerPort": 80,
-          "hostPort": 80
-        }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "flask-dev",
-          "awslogs-region": "ap-south-1",
-          "awslogs-stream-prefix": "flask-dev-log"
-        }
-      }
-    }
-  ],
-  "taskRoleArn": "...",
-  "executionRoleArn": "...",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "256",
-  "memory": "512"
-}
 
 Summary
 •	Deployed Flask app on ECS with Fargate (serverless)
