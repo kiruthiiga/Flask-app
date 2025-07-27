@@ -4,7 +4,7 @@
 
 This document outlines the steps followed to deploy a Flask application using Amazon ECS with Fargate, along with a CI/CD pipeline using GitHub Actions. This approach helps run the application on a serverless container platform without managing infrastructure manually.
 
-## 🛠 Tech Stack Used
+##Tech Stack Used
 
 - **Amazon ECS (Fargate)** – for serverless container orchestration  
 - **Amazon ECR** – for storing Docker images  
@@ -12,7 +12,7 @@ This document outlines the steps followed to deploy a Flask application using Am
 - **Docker** – to containerize the Flask application  
 - **Python Flask** – the web application framework used  
 
-## 🚀 ECS Deployment Steps
+##ECS Deployment Steps
 
 ### Step 1: Create ECS Cluster
 
@@ -77,7 +77,7 @@ This document outlines the steps followed to deploy a Flask application using Am
 
 - Updated the ECS service when a new Docker image or task definition is available  
 
-## ⚙️ CI/CD Pipeline with GitHub Actions
+##CI/CD Pipeline with GitHub Actions
 
 Configured **GitHub Actions** using a workflow file under `.github/workflows/deploy.yml`.  
 This automates the following steps:
@@ -87,7 +87,7 @@ This automates the following steps:
 - Docker image build & push to ECR  
 - ECS service deployment  
 
-## ✅ Summary
+##Summary
 
 - Deployed Flask app on **ECS with Fargate (serverless)**  
 - **CI/CD pipeline** set up using GitHub Actions  
