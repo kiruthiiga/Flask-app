@@ -60,7 +60,7 @@ This document outlines the steps followed to deploy a Flask application using Am
 
 ### Step 8: Target Group Setup
 
-- Went to **EC2 > Target Groups** under Load Balancing  
+- Go to **EC2 > Target Groups** under Load Balancing  
 - Created a new target group:  
   - Type: **IP**  
   - Protocol: **HTTP**  
