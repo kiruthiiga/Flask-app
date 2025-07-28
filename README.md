@@ -26,7 +26,7 @@ This document outlines the steps followed to deploy a Flask application using Am
 
 ### Step 3: Task Definition Creation
 
-- Went to **ECS > Task Definitions > Create new**
+- Go to **ECS > Task Definitions > Create new**
 - Selected **FARGATE** as the launch type  
 - Added container info (e.g., image: Flask app or NGINX)  
 - Mapped ports `80 → 80`  
